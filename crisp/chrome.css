@@ -1,0 +1,106 @@
+/* MacFox Crisp: window chrome. Overrides on top of the upstream userChrome.css
+   (its inline rules: toolbox backgrounds, titlebar buttons, toolbar paddings). */
+
+/* ---- Top area: solid white instead of macOS vibrancy tinting ---------------- */
+#navigator-toolbox,
+#nav-bar,
+#TabsToolbar,
+#titlebar {
+    background: var(--top-area-bg) !important;
+    appearance: none !important;
+    -moz-appearance: none !important;
+}
+
+/* Hairline between the white top area and the (white) page */
+#navigator-toolbox {
+    border-bottom: 1px solid var(--top-area-border) !important;
+}
+
+/* Inactive window: Safari's toolbar tint */
+:root:-moz-window-inactive #navigator-toolbox,
+:root:-moz-window-inactive #nav-bar,
+:root:-moz-window-inactive #TabsToolbar,
+:root:-moz-window-inactive #titlebar {
+    background: var(--top-area-bg-inactive) !important;
+    appearance: none !important;
+    -moz-appearance: none !important;
+    /* upstream: opacity 0.9 */
+    opacity: 1;
+}
+
+/* Bookmarks toolbar is transparent: the top area's white (or its tint in an
+   inactive window) shows through */
+#PersonalToolbar {
+    background: transparent !important;
+    appearance: none !important;
+    -moz-appearance: none !important;
+}
+
+/* ---- Header rhythm ---------------------------------------------------------
+   Window top -> tabs -> address bar -> header bottom are all --header-gap
+   (variables.css). The urlbar container adds no padding of its own
+   (--urlbar-padding-block: 0) and the tabs have no margin, so these paddings are
+   the only source of space. */
+#nav-bar {
+    padding-top: var(--header-gap) !important;
+    padding-bottom: var(--header-gap) !important;
+}
+
+#TabsToolbar {
+    box-sizing: border-box !important;
+    /* tab strip is exactly: gap above + the 28px tab */
+    height: calc(var(--header-gap) + var(--tab-min-height)) !important;
+    min-height: 0 !important;
+    padding-top: var(--header-gap) !important;
+    padding-bottom: 0 !important;
+    padding-left: 5px;
+    /* Right end: the last thing in the strip (a tab, or Firefox's "+" button when
+       the strip overflows) is the same gap from the edge as the tabs are from the
+       top, but never closer to the corner than the window's own corner radius
+       needs (a rectangle fits an arc of radius R once inset by about 0.29 * R).
+       Minus --tab-side-margin: the pill sits that far inside its tab. With the
+       "+" button present the same gap comes out via its margin below. */
+    padding-right: max(0px, calc(max(var(--header-gap), var(--window-corner-radius) * 0.3) - var(--tab-side-margin))) !important;
+}
+
+/* "+" button: its hover shape is 28px inside a 32px box (2px margin each side).
+   Its shape must end --header-gap from the edge, like a tab's pill does:
+     padding-right + this margin + 2px = gap, padding-right = gap - tab-side-margin
+     => this margin = tab-side-margin - 2px (negative with a small tab margin) */
+#tabbrowser-arrowscrollbox-periphery {
+    margin-inline-end: calc(var(--tab-side-margin) - 2px);
+}
+
+/* upstream: .toolbar-items { padding-right: 6px } silently added 6px to the gap
+   at the right end of the tab strip */
+.toolbar-items {
+    padding-right: 0;
+}
+
+/* Traffic lights centered on the tab row (they are 12px; the row is 28px) */
+#TabsToolbar .titlebar-buttonbox-container {
+    margin-top: 1px !important;
+    align-self: center;
+}
+
+/* ---- Bookmarks toolbar -------------------------------------------------
+   Hover/focus shape: small radius, so it hugs colored favicons cleanly
+   instead of a round blob. Favicons get a slight rounding of their own. */
+toolbarbutton.bookmark-item:not(.subviewbutton) {
+    border-radius: 4px !important;
+}
+
+#PlacesToolbarItems > .bookmark-item > .toolbarbutton-icon {
+    border-radius: 2px !important;
+}
+
+/* OPTIONAL - the last tab flush with the right edge: once the tab strip is full,
+   Firefox keeps its "+" (new tab) button pinned at the end, so the last tab
+   stays ~44px from the edge. To let the last tab reach the edge instead, remove
+   the comment markers around this block (new tabs: Cmd+T or double-click the
+   empty strip):
+#tabs-newtab-button,
+#tabbrowser-arrowscrollbox-periphery {
+    display: none !important;
+}
+*/

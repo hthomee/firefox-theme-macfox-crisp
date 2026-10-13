@@ -1,0 +1,16 @@
+# Cheap sanity checks for every push and pull request: the stylesheets parse,
+# the loaders and the installer are consistent with the files in the repository,
+# and nothing personal slipped in. The checks live in .github/scripts/check.sh,
+# which the upstream sync also runs before it merges anything on its own.
+name: Check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash .github/scripts/check.sh

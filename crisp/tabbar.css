@@ -1,0 +1,55 @@
+/* MacFox Crisp: tabs. Overrides on top of the upstream tabbar.css. */
+
+/* Same corner radius as the address bar (Safari's, see --urlbar-radius) */
+.tab-background {
+	border-radius: var(--urlbar-radius) !important;
+}
+
+/* Close button: a square (it used to be an 18 x 24 capsule), the same gap to the
+   tab's top, bottom and end edge, and a radius that is concentric with the
+   tab's: tab radius - gap. Sizes are defined in variables.css. */
+.tab-close-button {
+	box-sizing: border-box !important;
+	width: var(--tab-close-size) !important;
+	height: var(--tab-close-size) !important;
+	/* 12px icon centered in the square */
+	padding: calc((var(--tab-close-size) - 12px) / 2) !important;
+	margin-inline: 0 !important;
+	border-radius: var(--tab-inner-radius) !important;
+}
+
+/* The close button is only shown while the tab is hovered: a permanent "x" on
+   every tab is clutter and takes the title's space. Closing stays available on
+   hover, with middle-click and with Cmd+W. */
+.tabbrowser-tab:not(:hover) .tab-close-button {
+	display: none !important;
+}
+
+/* Resting tab: no button, so the title may use the space; its end padding equals
+   the start padding (symmetric). The start padding is pinned, too, so the
+   favicon sits at the same x in Compact and Normal density. */
+.tab-content {
+	padding-inline-start: var(--tab-side-padding) !important;
+	padding-inline-end: var(--tab-side-padding) !important;
+}
+
+/* Hovered tab: the button is back, and the end padding is the gap, so the
+   button's end gap equals its top/bottom gap. The title is shortened by the
+   button at that moment (it only appears on hover). */
+.tabbrowser-tab:hover .tab-content {
+	padding-inline-end: var(--tab-inner-gap) !important;
+}
+
+/* Space between the traffic lights and the first tab. Chosen so the first tab's
+   left edge sits on the same x as the address bar's left edge below it
+   (13px minus the tab's own side margin keeps that alignment whatever
+   --tab-side-margin is). */
+.titlebar-spacer[type="pre-tabs"] {
+	width: calc(13px - var(--tab-side-margin)) !important;
+}
+
+/* Space around each tab. Only the active (or hovered) tab has a visible edge, so
+   neighbours need very little room: --tab-side-margin each side. */
+body:has(.tabbrowser-tab):not(:has(#vertical-tabs .tabbrowser-tab)) .tabbrowser-tab {
+	padding-inline: var(--tab-side-margin) !important;
+}

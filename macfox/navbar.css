@@ -1,0 +1,87 @@
+#nav-bar {
+	height: 44px !important;
+	border: 0 !important;
+	padding-left: 8px !important;
+	padding-right: 8px !important;
+	padding-top: 4px !important;
+	padding-bottom: 4px !important;
+}
+
+#main-window[inFullscreen] #nav-bar {
+	padding-left: 8px !important;
+}
+
+#nav-bar {
+	background-color: transparent !important;
+}
+
+#navigator-toolbox[inFullscreen] {
+	background-color: var(--background-color-primary) !important;
+}
+
+/* Toolbar button look (button colors/padding live in variables.css) */
+#nav-bar .toolbarbutton-1 image,
+#nav-bar .toolbarbutton-1 .toolbarbutton-badge-stack {
+	fill: var(--tint-color-primary) !important;
+	border-radius: var(--border-circle) !important;
+}
+
+#nav-bar .toolbarbutton-1 {
+	padding: 5px !important;
+}
+
+/* Compresses urlbar in navbar */
+#nav-bar toolbarspring {
+	max-width: none !important;
+	-moz-box-flex: 300 !important;
+}
+
+/* width is nav-bar padding-left - padding-right*/
+#nav-bar toolbarspring:last-of-type:before {
+	-moz-box-flex: 1;
+	display: -moz-box;
+	content: "";
+	width: 82px;
+}
+
+#main-window[inFullscreen] #nav-bar toolbarspring:last-of-type:before {
+	-moz-box-flex: 1;
+	display: -moz-box;
+	content: "";
+	width: 0px;
+}
+
+#reload-button image,
+#stop-button image,
+#downloads-button image {
+	animation-duration: 0s !important;
+}
+
+/* center */
+#nav-bar toolbarspring:last-of-type:before {
+	display: block;
+	content: "";
+	width: 158px;
+}
+
+#main-window[inFullscreen] #nav-bar toolbarspring:last-of-type:before {
+	display: block;
+	content: "";
+	width: 38px;
+}
+
+/* FindBar */
+
+findbar {
+	background-color: var(--background-color-primary) !important;
+}
+
+/* Style the FindBar text input */
+.findbar-textbox {
+	border: 1px solid var(--accent) !important;
+	background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.searchmode-switcher {
+	margin: 3px 1px 3px 4px;
+}

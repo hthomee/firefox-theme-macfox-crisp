@@ -1,0 +1,333 @@
+/* MacFox Crisp: address bar. Overrides on top of the upstream urlbar.css.
+
+   Part 1 undoes upstream rules we do not want (they use !important, so they can
+   only be countered with !important at the same or higher specificity, later).
+   Part 2 is what we add. */
+
+/* ==========================================================================
+   Part 1: counter upstream rules
+   ========================================================================== */
+
+/* Upstream caps the field at 50% width and centers its text */
+#urlbar-container {
+	max-width: none !important;
+}
+
+#urlbar {
+	/* upstream: margin-bottom: 2px (pushed the field 1px above the centered buttons) */
+	margin-bottom: 0 !important;
+	/* upstream round-cornered and blurred the #urlbar element itself and tinted
+	   its background; the field is painted by .urlbar-background, so none of that
+	   is wanted. These are Firefox's own defaults. */
+	border-radius: 0 !important;
+	backdrop-filter: none !important;
+	background-color: transparent !important;
+}
+
+:root:-moz-window-inactive #urlbar {
+	background: transparent !important;
+}
+
+#urlbar[open] {
+	/* upstream added a second shadow + radius on the element itself */
+	border-radius: 0 !important;
+	box-shadow: none !important;
+}
+
+/* upstream centered the text of an unfocused field: back to Firefox's own
+   (start-aligned, domain emphasised, rest dimmed) */
+#urlbar:not([focused]) #urlbar-input {
+	text-align: start !important;
+}
+
+/* upstream's `margin-top: -2px` pushed page action icons 1px above the centre of
+   their (centered) box */
+.urlbar-page-action image {
+	margin-top: 0 !important;
+}
+
+/* Upstream forced the field's radius, border color and shadow with !important,
+   which also flattened Firefox's own open-state corners (square at the bottom,
+   where the suggestion sheet continues). Re-state, per state, what Firefox would
+   do through the variables set in Part 2. */
+.urlbar-background {
+	border-radius: var(--urlbar-background-border-radius) !important;
+}
+
+#urlbar[focused] > .urlbar-background {
+	border-color: var(--url-focus-ring-edge-color) !important;
+}
+
+#urlbar[focused]:not([open]) .urlbar-background {
+	/* upstream forced a transparent background for every unopened state */
+	background-color: var(--url-bar-open-background-color) !important;
+}
+
+#urlbar[open] .urlbar-background {
+	/* the field half of the joint surface: rounded at the top only */
+	border-radius: var(--urlbar-background-border-top-radius-open) var(--urlbar-background-border-top-radius-open) 0 0 !important;
+	border-color: transparent !important;
+}
+
+#urlbar[popover-open] > .urlbar-background {
+	box-shadow: var(--urlbar-background-box-shadow-open) !important;
+}
+
+/* ==========================================================================
+   Part 2: ours
+   ========================================================================== */
+
+#urlbar {
+	/* The field and the open suggestion sheet are painted by Firefox as ONE joint
+	   surface made of two halves (.urlbar-background = the field half,
+	   .urlbarView-background = the sheet half). Both read the same variables, so
+	   everything is styled through those: that keeps radii, borders, colors and
+	   the shadow identical on both halves.
+	   userChrome.css is a *user* sheet, so these need !important to beat the
+	   values Firefox's own stylesheets set on .urlbar. */
+	--urlbar-background-border-radius: var(--urlbar-radius) !important;
+	--urlbar-background-color: var(--url-bar-background-color) !important;
+	--urlbar-background-color-focus: var(--url-bar-open-background-color) !important;
+	--urlbar-background-border: 1px solid var(--url-border-color) !important;
+	/* Open sheet: no outline, the shadow alone defines the surface (airy, not
+	   strict). The border stays as an invisible 1px so nothing shifts. */
+	--urlbar-background-border-open: 1px solid transparent !important;
+	--urlbar-background-border-focused: 1px solid var(--url-focus-ring-edge-color) !important;
+	/* The focus ring is drawn as a box-shadow below, not as an outline: an outline
+	   sits exactly on the border's edge and the two anti-aliased edges leave a
+	   thin white seam at the rounded corners. */
+	--urlbar-background-outline-focused: none !important;
+	/* Soft and wide. Keep the blur below --urlbar-joint-background-overlap (24px):
+	   each half of the joint surface carries the shadow only that far. */
+	--urlbar-background-box-shadow-open: 0 4px 20px rgba(0, 0, 0, 0.16) !important;
+	/* Newer Firefox (Nova) additionally outlines the input container: keep it off */
+	--urlbar-input-container-outline-open: none !important;
+	--urlbar-input-container-outline-open-focused: none !important;
+}
+
+/* Safari-style focus ring: 3px, only for a focused bar WITHOUT an open sheet.
+   Painted below the border (box-shadow), so there is no seam between ring and
+   border edge. */
+#urlbar[focused]:not([open]) > .urlbar-background {
+	box-shadow: 0 0 0 3px var(--url-focus-ring-color) !important;
+}
+
+/* Suggestion sheet open: no ring at all. The shared shadow around field + sheet
+   is the highlight. The field's border matches the sheet's so both halves meet
+   as one surface.
+   - The field grows --urlbar-open-expand on all sides while the sheet is open.
+   - One corner radius for top and bottom (--urlbar-sheet-radius). The field
+     half's top radius and the sheet half's bottom radius both come from
+     --urlbar-background-border-radius, so rows and chips inside stay
+     concentric: see variables.css for the arithmetic. */
+#urlbar[open] {
+	/* width of the chip before the URL text in this state, and the gap between
+	   chip and text (see variables.css) */
+	--urlbar-text-chip-width: var(--urlbar-chip-shield-width);
+	--urlbar-text-gap-current: var(--urlbar-text-gap);
+	--urlbar-background-border-focused: var(--urlbar-background-border-open) !important;
+	--urlbar-background-border-radius: var(--urlbar-sheet-radius) !important;
+	--urlbar-input-growth-open-block: var(--urlbar-open-expand) !important;
+	--urlbar-input-growth-open-inline: var(--urlbar-open-expand) !important;
+}
+
+/* Typing (or a new tab): the search engine chip precedes the text */
+#urlbar[open][pageproxystate="invalid"] {
+	--urlbar-text-chip-width: var(--urlbar-chip-switcher-width);
+	--urlbar-text-gap-current: var(--urlbar-input-gap-px);
+}
+
+#star-button-box {
+	/* Star sits where the reader icon was (first page action) ... */
+	order: -1;
+}
+
+/* ... and the reader icon takes the star's old spot at the end */
+#reader-mode-button {
+	order: 1;
+}
+
+/* Bookmark star only while the urlbar has focus (Cmd+D still works) */
+#urlbar:not([focused]):not(:focus-within) #star-button-box {
+	display: none !important;
+}
+
+/* Star with the outline drawn inwards: the outer silhouette keeps sharp points.
+   Icons follow the text color via context-fill (needs
+   svg.context-properties.content.enabled). */
+#star-button {
+	list-style-image: url("icons/star.svg") !important;
+	-moz-context-properties: fill, fill-opacity !important;
+}
+
+#star-button[starred] {
+	list-style-image: url("icons/star-filled.svg") !important;
+	fill: AccentColor !important;
+}
+
+/* Shield: WhiteSur's shape as a plain outline (secure page / blocker scan).
+   Same quiet gray as the other urlbar icons: dimmed, full strength on hover. */
+#trust-icon-container:not(.insecure, .warning, .inactive, .breached, .file) {
+	list-style-image: url("icons/shield.svg") !important;
+	opacity: 0.3;
+}
+
+#trust-icon-container:not(.insecure):hover {
+	opacity: 1;
+}
+
+/* Plain http: the same shield struck through in red with a clean gap around
+   the stroke. The "Not Secure" label stays Firefox's own. */
+#trust-icon-container.insecure {
+	list-style-image: url("icons/shield-insecure.svg") !important;
+}
+
+/* Warning states (error pages, certificate problems, breached site): the shield
+   with an exclamation mark, a bit less quiet than the plain shield */
+#trust-icon-container:is(.warning, .breached):not(.insecure) {
+	list-style-image: url("icons/shield-warning.svg") !important;
+	opacity: 0.6;
+}
+
+#trust-icon-container:is(.warning, .breached):not(.insecure):hover {
+	opacity: 1;
+}
+
+/* Tracking protection switched off for this site: shield struck through in the
+   neutral icon color (not red: it is a setting, not a danger) */
+#trust-icon-container.inactive:not(.insecure, .warning, .breached) {
+	list-style-image: url("icons/shield-disabled.svg") !important;
+	opacity: 0.3;
+}
+
+#trust-icon-container.inactive:not(.insecure):hover {
+	opacity: 1;
+}
+
+/* The plain shield (secure, warning, protection off) is a 20 x 20 box, centered
+   on the same vertical line as a tab's favicon, with a 14px glyph centered in it
+   (air on both sides). The "Not Secure" chip keeps Firefox's own 16px glyph and
+   padding. */
+#trust-icon-container:not(.insecure) {
+	padding-inline: var(--urlbar-shield-padding) !important;
+}
+
+#trust-icon-container:not(.insecure) #trust-icon {
+	width: var(--urlbar-shield-size) !important;
+	height: var(--urlbar-shield-size) !important;
+}
+
+/* Page loaded, plain shield: the URL text starts on the same x as the title of
+   the first tab (plus 1px optical correction), and the shield is centered under
+   the first tab's favicon.
+   Not for the "Not Secure" chip or Firefox/extension chiclets: their chip
+   background needs the normal gap, and typing keeps the search engine chip's. */
+#urlbar[pageproxystate="valid"]:has(#trust-icon-container:not(.insecure)):not(:has(#identity-box:is(.chromeUI, .extensionPage))) .urlbar-input-box {
+	margin-inline-start: var(--urlbar-text-gap) !important;
+}
+
+/* Chips inside the field (search engine, search mode, "Not Secure", Firefox /
+   extension chiclets): the same gap on every side, so their corners stay
+   concentric with the field's rounded edge. Measured from the field's OUTER
+   edge the gap is --urlbar-inner-margin on all four sides:
+   - top/bottom: automatic, the chip is centered and
+     (outer height - chip height) / 2 = margin (see --urlbar-control-height)
+   - inline-start: Firefox already adds the container's border (proton) and
+     padding before the chip, so exactly that is taken off the chip's margin.
+   Radius = field radius - gap (--urlbar-inner-radius), i.e. concentric.
+   NB: the search engine chip has NO id in current Firefox, only the class
+   .searchmode-switcher; rules written for "#urlbar-searchmode-switcher" (as
+   upstream's) never matched anything. */
+.searchmode-switcher,
+#urlbar-search-mode-indicator,
+#trust-icon-container {
+	height: var(--urlbar-control-height) !important;
+	min-height: 0 !important;
+	box-sizing: border-box !important;
+	align-self: center !important;
+	margin-block: 0 !important;
+	margin-inline: var(--urlbar-chip-margin-start) 0 !important;
+	border-radius: var(--urlbar-inner-radius) !important;
+}
+
+/* Icons on the field's inner edge (page actions, star, Firefox/extension
+   chiclets) must fit into the field's inner height: outer height - 2 x 1px
+   border. height (20) + margin-block must therefore be <= that, i.e. the margin
+   is the gap minus the border. With 4px margins on all sides the field used to
+   grow by 2px the moment the bar was focused and these icons appeared, and the
+   whole header jumped. */
+#urlbar .urlbar-page-action,
+#urlbar .identity-box-button,
+#urlbar #star-button-box {
+	margin-block: calc(var(--urlbar-inner-margin) - var(--urlbar-container-border)) !important;
+}
+
+/* Firefox / extension chiclet at the start of the field */
+#identity-box:is(.chromeUI, .extensionPage) {
+	margin-inline-start: calc(-1 * var(--urlbar-chip-start-offset));
+}
+
+/* The search engine chip is a <moz-button>: its visible gray shape is the inner
+   button part, which has its own radius and ignores the host's border-radius */
+.searchmode-switcher {
+	--button-border-radius: var(--urlbar-inner-radius);
+}
+
+.searchmode-switcher::part(button) {
+	border-radius: var(--urlbar-inner-radius) !important;
+}
+
+/* Same on the far side: the last page action keeps the same gap to the field's
+   edge as the first chip has on the other side */
+#page-action-buttons {
+	margin-inline-end: calc(-1 * var(--urlbar-chip-start-offset));
+}
+
+/* The separator between the input row and the results: ONE thin line that
+   - sits exactly on the row of the header's bottom line, same color, so the two
+     read as one line. The view starts --urlbar-open-expand below the field and
+     the header ends --header-gap below it, so the line is that difference down
+     from the view's top (0 when both are equal), and
+   - runs the sheet's full width. Firefox's own separator is the results list's
+     top border, which is only as wide as the result rows (5.6px short on each
+     side, leaving gaps). Its border is hidden and the line is drawn from the
+     view itself, reaching out to the sheet's edges. */
+.urlbarView-results {
+	border-top-color: transparent !important;
+	/* Firefox spaces the first row from the view's top edge (5.6px), but the line
+	   now sits (header-gap - expand) below that edge. Add exactly that, so the
+	   first row is as far from the line as it is from the sheet's sides. */
+	padding-top: calc(var(--urlbar-sheet-gap) + var(--header-gap) - var(--urlbar-open-expand)) !important;
+}
+
+.urlbarView::before {
+	content: "";
+	position: absolute;
+	z-index: 1;
+	top: calc(var(--header-gap) - var(--urlbar-open-expand));
+	height: 1px;
+	inset-inline: calc(-1 * var(--urlbarView-margin-inline, 7px));
+	background: var(--top-area-border);
+	pointer-events: none;
+}
+
+/* The text of a result starts on the same x as the URL text in the field.
+   x of the URL text, from the field's left edge:
+     chip offset (border + padding) + chip start margin + chip + input gap
+   x of the result's text, from the sheet's left edge (which is --urlbar-open-expand
+   left of the field):
+     row gap + 1 + 4 (row padding) + 6 (icon margin) + 16 (icon) + the icon's end
+     margin, which is the one thing set here. */
+.urlbarView-row .urlbarView-favicon {
+	margin-inline-end: calc(
+		var(--urlbar-chip-start-offset) + var(--urlbar-chip-margin-start) + var(--urlbar-text-chip-width, var(--urlbar-chip-shield-width)) + var(--urlbar-text-gap-current, var(--urlbar-input-gap-px))
+		+ var(--urlbar-open-expand)
+		- var(--urlbar-sheet-gap) - 1px - 4px - 6px - 16px
+	) !important;
+}
+
+/* Rows (hover / selected): concentric with the sheet, radius = sheet radius -
+   the gap between a row and the sheet's edge (upstream: a fixed 8px) */
+#urlbar[open] .urlbarView-row {
+	border-radius: max(0px, calc(var(--urlbar-sheet-radius) - var(--urlbar-sheet-gap))) !important;
+}

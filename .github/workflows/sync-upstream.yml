@@ -1,0 +1,139 @@
+# Keeps macfox/ (the upstream theme, vendored unmodified) up to date with
+# d0sse/macFox-theme.
+#
+# Every Monday (and on demand) it compares upstream's files with macfox/:
+#   - same     -> does nothing
+#   - changed  -> replaces macfox/ on a branch, runs the sanity checks
+#                 (.github/scripts/check.sh) and opens a pull request that says
+#                 whether they passed. You merge it with one click.
+#                   - checks fail   -> additionally opens an issue
+#   - the sync itself breaks (upstream removed a file, GitHub is down, ...)
+#                 -> opens an issue with a link to the run
+#
+# Merging is manual by default. To let it merge by itself when the checks pass,
+# set the repository variable AUTO_MERGE to "true" (Settings > Secrets and
+# variables > Actions > Variables).
+#
+# There is no git merge involved: our own changes live in crisp/, upstream's
+# files are copied as they are, so this can never conflict.
+#
+# One-time setting: Settings > Actions > General > Workflow permissions >
+# "Allow GitHub Actions to create and approve pull requests".
+name: Sync upstream
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+env:
+  UPSTREAM_REPO: https://github.com/d0sse/macFox-theme.git
+  UPSTREAM_BRANCH: main
+  FILES: "userChrome.css userContent.css variables.css navbar.css urlbar.css icons.css tabbar.css"
+  GH_TOKEN: ${{ github.token }}
+  ISSUE_TITLE: "Upstream sync needs a look"
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch upstream
+        run: |
+          git clone --depth 1 --branch "$UPSTREAM_BRANCH" "$UPSTREAM_REPO" "$RUNNER_TEMP/upstream"
+          echo "UPSTREAM_SHA=$(git -C "$RUNNER_TEMP/upstream" rev-parse --short HEAD)" >> "$GITHUB_ENV"
+
+      - name: Copy upstream's files into macfox/
+        run: |
+          for f in $FILES; do
+            [ -f "$RUNNER_TEMP/upstream/$f" ] || { echo "upstream no longer has $f"; exit 1; }
+            cp "$RUNNER_TEMP/upstream/$f" "macfox/$f"
+          done
+          echo "$UPSTREAM_SHA" > macfox/UPSTREAM
+
+      - name: Anything new?
+        id: diff
+        run: |
+          if git diff --quiet -- macfox; then
+            echo "macfox/ already matches upstream ($UPSTREAM_SHA)."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit to a branch
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BRANCH="sync/upstream-$(date +%Y%m%d)"
+          echo "BRANCH=$BRANCH" >> "$GITHUB_ENV"
+          git checkout -B "$BRANCH"
+          git add macfox
+          git commit -m "Sync macfox/ with upstream ($UPSTREAM_SHA)"
+          git push --force origin "$BRANCH"
+
+      - name: Sanity checks on the updated theme
+        id: checks
+        if: steps.diff.outputs.changed == 'true'
+        continue-on-error: true
+        run: bash .github/scripts/check.sh | tee "$RUNNER_TEMP/check.log"
+
+      - name: Open the pull request
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          {
+            echo "Upstream d0sse/macFox-theme changed (now at $UPSTREAM_SHA). macfox/ was replaced with its files; crisp/ is untouched."
+            echo
+            echo "Changed files:"
+            echo '```'
+            git diff --stat HEAD~1 HEAD -- macfox
+            echo '```'
+            echo
+            if [ "${{ steps.checks.outcome }}" = "success" ]; then
+              echo "Sanity checks: passed."
+            else
+              echo "Sanity checks: **failed**, see the issue linked below or the run log."
+            fi
+            echo
+            echo "These checks only look at structure (files exist, CSS parses). Open Firefox once and look at the theme if the stylesheets changed a lot."
+          } > "$RUNNER_TEMP/body.md"
+          gh pr create --base "${{ github.event.repository.default_branch }}" \
+            --head "$BRANCH" --title "Sync upstream ($(date +%Y-%m-%d))" \
+            --body-file "$RUNNER_TEMP/body.md"
+
+      - name: Merge it when the checks passed (only if AUTO_MERGE is "true")
+        id: merge
+        if: steps.diff.outputs.changed == 'true' && steps.checks.outcome == 'success' && vars.AUTO_MERGE == 'true'
+        continue-on-error: true
+        run: gh pr merge "$BRANCH" --squash --delete-branch
+
+      - name: Ask for a human when something is not clean
+        if: failure() || (steps.diff.outputs.changed == 'true' && steps.checks.outcome != 'success') || steps.merge.outcome == 'failure'
+        run: |
+          if [ -n "$(gh issue list --state open --search "in:title $ISSUE_TITLE" --json number --jq '.[].number')" ]; then
+            echo "There is already an open issue about this."; exit 0
+          fi
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          {
+            echo "The automatic sync with d0sse/macFox-theme could not finish on its own."
+            echo
+            echo "- Run: $RUN_URL"
+            echo "- Upstream commit: ${UPSTREAM_SHA:-unknown}"
+            [ -n "${BRANCH:-}" ] && echo "- Branch with the updated files: \`$BRANCH\` (there should be a pull request for it)"
+            echo
+            echo "Typical causes: upstream renamed or removed a file (adjust FILES in the workflow and the loaders), or a sanity check failed after the update."
+            if [ -f "$RUNNER_TEMP/check.log" ]; then
+              echo
+              echo '```'
+              grep -E 'FAIL|Checks failed' "$RUNNER_TEMP/check.log" || true
+              echo '```'
+            fi
+          } > "$RUNNER_TEMP/issue.md"
+          gh issue create --title "$ISSUE_TITLE" --body-file "$RUNNER_TEMP/issue.md"

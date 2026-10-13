@@ -1,0 +1,7 @@
+/* MacFox Crisp
+   1. the upstream macFox theme, unchanged (macfox/)
+   2. the MacFox Crisp overlay, which only contains what differs from it (crisp/)
+   This file is the whole "install": put the repository's contents into your
+   Firefox profile's `chrome` folder. */
+@import "macfox/userChrome.css";
+@import "crisp/crisp.css";

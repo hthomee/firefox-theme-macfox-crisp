@@ -1,0 +1,103 @@
+/* URL bar colors live in variables.css */
+
+#urlbar-container {
+	max-width: 50% !important;
+}
+
+#urlbar {
+	min-height: var(--urlbar-height) !important;
+	font-size: 13px !important;
+	margin-bottom: 2px !important;
+}
+
+#urlbar[open] {
+	border-radius: var(--border-big) !important;
+	box-shadow: 0px 2px 20px rgba(4, 2, 5, 0.2) !important;
+}
+
+/* Centers text in urlbar */
+#urlbar:not([focused]) #urlbar-input {
+	text-align: center !important;
+}
+
+/* Urlbar icons look (corner radii handled by the nested-radius rule below) */
+.urlbar-page-action {
+	height: var(--urlbar-control-height) !important;
+}
+
+.urlbar-page-action image {
+	margin-top: -2px !important;
+	transform: scale(0.9, 0.9) !important;
+}
+
+.identity-box-button image {
+	transform: scale(0.9, 0.9) !important;
+}
+
+.urlbar-background {
+	/* Solid background from ATBC or theme */
+	border-color: var(--url-border-color) !important;
+	border-radius: var(--border-circle) !important;
+	box-shadow: none !important;
+	outline-width: 2px !important;
+	outline-color: var(--url-bar-outline-color) !important;
+}
+
+#urlbar *|input::placeholder {
+	color: var(--url-placeholder-color) !important;
+}
+
+#urlbar:not([open]) .urlbar-background {
+	background-color: var(--url-bar-background-color) !important;
+}
+
+
+#urlbar[open] .urlbar-background {
+	background-color: initial;
+	border-radius: var(--border-big) !important;
+	border-color: var(--url-border-color) !important;
+}
+
+/* Urlbar mode indicator look */
+#urlbar-search-mode-indicator,
+#identity-box.chromeUI #identity-icon-box,
+#identity-box.extensionPage #identity-icon-box {
+	background-color: var(--hover-color-primary) !important;
+}
+
+#tracking-protection-icon-container {
+	display: none;
+}
+
+#identity-icon-box {
+	margin: 2px !important;
+}
+
+#star-button-box {
+	margin: var(--urlbar-inner-margin) !important;
+}
+
+#star-button[starred="true"] {
+	fill: AccentColor !important;
+}
+
+#urlbar-searchmode-switcher {
+	background-color: transparent !important;
+}
+
+/* Nested corner radius: controls inset inside the urlbar keep corners
+   concentric with the urlbar's rounded edge (radius = outer - margin). */
+.identity-box-button,
+.urlbar-page-action,
+#star-button-box,
+.urlbar-revert-button {
+	border-radius: var(--urlbar-inner-radius) !important;
+}
+
+.urlbar-revert-button {
+	margin-right: 4px;
+}
+
+#urlbar[open] .urlbarView-row {
+	border-radius: var(--border-big-2) !important;
+}

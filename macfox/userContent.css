@@ -1,0 +1,111 @@
+html.private {
+	--in-content-page-background: #323233 !important;
+}
+
+html.private>body {
+	background-color: transparent !important;
+}
+
+html.b_firefox {
+	background-color: #FEFEFE;
+}
+
+.search-inner-wrapper {
+	display: none !important;
+}
+
+
+
+@media (prefers-color-scheme: light) {
+
+	html,
+	body {
+		background-color: white;
+	}
+
+	body.neterror,
+	body#viewsource {
+		background-color: white !important;
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+
+	html,
+	body {
+		background-color: #323233;
+	}
+
+	body.neterror,
+	body#viewsource {
+		background-color: #323233 !important;
+	}
+}
+
+body.gm-popup,
+body.pageCharlie {
+	background-color: #FEFEFE !important;
+}
+
+@-moz-document url-prefix("about:") {
+
+	.nova-outer-wrapper .customize-menu,
+	.nova-outer-wrapper .logo-and-wordmark-wrapper,
+	.nova-outer-wrapper .main-button,
+	.nova-outer-wrapper .personalize-button,
+	/* Non-Nova New Tab: the bottom-right "personalize / customize" pencil */
+	.personalizeButtonWrapper,
+	.personalize-button,
+	.customize-menu {
+		display: none !important;
+	}
+
+	html,
+	body {
+		background-color: transparent !important;
+	}
+}
+
+@-moz-document url-prefix("about:neterror"),
+url-prefix("about:certerror"),
+url-prefix("about:httpsonlyerror"),
+url-prefix("about:logins"),
+url-prefix("about:addons"),
+url-prefix("about:preferences") {
+
+
+
+	@media (prefers-color-scheme: light) {
+
+		html,
+		body {
+			background-color: white !important;
+		}
+
+		body.neterror,
+		body#viewsource {
+			background-color: white !important;
+		}
+	}
+
+	@media (prefers-color-scheme: dark) {
+
+		html,
+		body {
+			background-color: #323233 !important;
+		}
+
+		body.neterror,
+		body#viewsource {
+			background-color: #323233 !important;
+		}
+	}
+}
+
+@-moz-document url-prefix("https://x.com") {
+
+	html,
+	body {
+		background-color: inherit;
+	}
+}

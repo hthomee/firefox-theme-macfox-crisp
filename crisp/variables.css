@@ -1,0 +1,186 @@
+/* MacFox Crisp: variables. Only values that differ from, or are new on top of,
+   the upstream theme's variables.css. */
+
+:root {
+	/* ----------------------------------------------------------------------
+	   Tabs
+	   The header size is fixed by the theme and does NOT depend on Firefox's
+	   density setting (Compact is deprecated in Firefox anyway): 28px tabs, 28px
+	   field, 28px toolbar buttons, 5px gaps. Safari-sized.
+	   ---------------------------------------------------------------------- */
+	--tab-min-height: 28px !important;
+	/* No margin around the tab: the header gap is set by #TabsToolbar padding, so
+	   top, bottom and side gaps are exactly --header-gap */
+	--tab-margin-block: 0px !important;
+	/* Space on each side of a tab, half of --header-gap: the gap BETWEEN two tabs
+	   then equals the gap of a tab to the top and to the address bar below. */
+	--tab-side-margin: calc(var(--header-gap) / 2);
+	/* Inside a tab: the close button is a square with the same gap to the tab's
+	   top, bottom and end edge, and a radius concentric with the tab's
+	   (tab radius - gap). */
+	--tab-close-size: 20px;
+	/* Start/end padding of the tab's content: the same as the favicon's gap to the
+	   tab's top and bottom, (tab height - 16px icon) / 2 = 6px, so the favicon
+	   is as far from the left edge as from the top. Pinned (Firefox would use 6px
+	   in Compact and 8px in Normal), so the tab looks the same in both densities
+	   and everything derived from it (the close button, the shield and the URL
+	   text lining up with the first tab) has one set of numbers. */
+	--tab-side-padding: calc((var(--tab-min-height) - 16px) / 2);
+	--tab-inner-gap: calc((var(--tab-min-height) - var(--tab-close-size)) / 2);
+	--tab-inner-radius: max(0px, calc(min(var(--urlbar-radius), var(--tab-min-height) / 2) - var(--tab-inner-gap)));
+
+	/* Tab colors. The top area is white: inactive tabs are transparent, the
+	   active tab carries the gray the toolbar used to have (solid). */
+	--tab-overlay-hover: color-mix(in srgb, var(--mf-toolbar-fg) 8%, transparent);
+	--tab-color: transparent;
+	--tab-active-color: #e6e6e8;
+
+	/* ----------------------------------------------------------------------
+	   Toolbar buttons
+	   Hover/active colors come from ATBC's --hover-color-primary when that
+	   extension provides it, otherwise from the Safari-like values below.
+	   ---------------------------------------------------------------------- */
+	--button-hover-bg: var(--hover-color-primary, rgba(0, 0, 0, 0.06));
+	--button-active-bg: var(--hover-color-primary, rgba(0, 0, 0, 0.11));
+	--toolbarbutton-background-color-hover: var(--button-hover-bg) !important;
+	--toolbarbutton-background-color-active: var(--button-active-bg) !important;
+	/* Height of a toolbar button (= its hover shape): 16px icon + 2 x padding */
+	--toolbar-button-size: 28px;
+	--toolbarbutton-padding-inner: calc((var(--toolbar-button-size) - 16px) / 2) !important;
+	/* Legacy names (Firefox <= 151) */
+	--button-hover-bgcolor: var(--button-hover-bg) !important;
+	--toolbarbutton-active-background: var(--button-active-bg) !important;
+	--toolbarbutton-inner-padding: calc((var(--toolbar-button-size) - 16px) / 2) !important;
+
+	/* ----------------------------------------------------------------------
+	   URL bar geometry
+	   --urlbar-height is Firefox's own variable and it is the field's OUTER
+	   height (measured in a real window: 26px in = 26px out). A plain declaration
+	   always lost against Firefox's own, so everything derived from the upstream
+	   theme's "30px" was off. !important pins it. Same height as a tab and as a
+	   toolbar button, so every row of the header lines up.
+	   ---------------------------------------------------------------------- */
+	--urlbar-height: 28px !important;
+	/* Safari's field corner radius, measured from a Safari screenshot (~6.7pt) */
+	--urlbar-radius: 7px;
+	/* Chips inside the field: one gap on every side. Vertically the chip is
+	   centered, so (outer height - chip height) / 2 = gap. */
+	--urlbar-control-height: calc(var(--urlbar-height) - 2 * var(--urlbar-inner-margin));
+	/* Distance from the field's outer edge to where the container's content starts
+	   (its 1px border + 1px padding in the proton design). Chips take this off
+	   their own start margin so the gap is the same as above and below. */
+	--urlbar-container-border: 1px;
+	--urlbar-chip-start-offset: calc(var(--urlbar-container-border) + var(--urlbar-input-container-padding, 1px));
+	--urlbar-chip-margin-start: max(0px, calc(var(--urlbar-inner-margin) - var(--urlbar-chip-start-offset)));
+	/* Concentric radius: field radius (capped at a pill) minus the gap */
+	--urlbar-inner-radius: max(0px, calc(min(var(--urlbar-radius), var(--urlbar-height) / 2) - var(--urlbar-inner-margin)));
+	/* Space above/below the urlbar inside the toolbar comes from #nav-bar only */
+	--urlbar-padding-block: 0px !important;
+
+	/* ----------------------------------------------------------------------
+	   Header rhythm
+	   One gap between window top, tab strip, address bar and header bottom, and
+	   at the right end of the tab strip. Tune the whole look with this number.
+	   ---------------------------------------------------------------------- */
+	--header-gap: 5px;
+	/* Suggestion sheet (the dropdown under the address bar). While it is open the
+	   field grows --urlbar-open-expand on ALL sides, so the chips inside have the
+	   same gap to the sheet's top as to its sides (4 + expand). One radius for the
+	   sheet's top and bottom corners, derived so that everything inside stays
+	   concentric with it:
+	     chip radius = sheet radius - (field gap + expand)    -> same as closed
+	     row radius  = sheet radius - gap rows <-> sheet edge
+	   --urlbar-sheet-gap was measured (rows sit 5.6px from the sheet's edge, no
+	   matter how much the sheet grows). */
+	--urlbar-open-expand: 3px;
+	--urlbar-sheet-radius: calc(var(--urlbar-inner-radius) + var(--urlbar-inner-margin) + var(--urlbar-open-expand));
+	--urlbar-sheet-gap: 5.6px;
+	/* Where the text of a result row starts must equal where the URL text starts
+	   in the field. The URL text sits after the chip on the field's left, and the
+	   chip's width depends on the state; these were measured:
+	   - search engine chip (typing / new tab):  46.5px
+	   - shield (page loaded, not typing):       --urlbar-shield-width, below
+	   - 0.45em of the 13px field font:          5.85px  (--urlbar-input-gap) */
+	--urlbar-chip-switcher-width: 46.5px;
+	--urlbar-input-gap-px: 5.85px;
+
+	/* The URL text starts where the first tab's title starts, and the shield is
+	   centered on the same vertical line as a tab's favicon (the address bar and
+	   the first tab begin on the same edge). In a tab: side padding, 16px favicon,
+	   then Firefox's icon-to-title margin (5.5px).
+	   - shield size:    smaller than the 16px favicon, so it has air on both sides
+	   - shield width:   a box centered on the favicon's centre line (this is also
+	                     its hover shape: a square, as tall as the field's chips)
+	   - shield padding: centers the glyph in that box
+	   - text gap:       what is left to the title's x after the box
+	   - text optical:   a fine correction on top, 0 = the text starts exactly on
+	                     the title's x (measured: input and label ink then agree) */
+	--urlbar-shield-size: 14px;
+	--urlbar-text-optical: 0px;
+	--urlbar-shield-width: calc(2 * (var(--tab-side-padding) + 8px - var(--urlbar-chip-start-offset) - var(--urlbar-chip-margin-start)));
+	--urlbar-shield-padding: calc((var(--urlbar-shield-width) - var(--urlbar-shield-size)) / 2);
+	--urlbar-text-gap: calc(var(--tab-side-padding) + 16px + var(--tab-icon-end-margin, 5.5px) + var(--urlbar-text-optical) - var(--urlbar-chip-start-offset) - var(--urlbar-chip-margin-start) - var(--urlbar-shield-width));
+	--urlbar-chip-shield-width: var(--urlbar-shield-width);
+	/* Corner radius of the macOS window (10px before Tahoe, ~20px with it). The
+	   last tab keeps at least the clearance a rectangle needs inside that arc. */
+	--window-corner-radius: 10px;
+
+	/* ----------------------------------------------------------------------
+	   Colors
+	   ---------------------------------------------------------------------- */
+	/* Unfocused field is transparent (takes the top area's white, or its tint in an
+	   inactive window). Focused field and the open suggestion sheet are solid. */
+	--url-bar-background-color: transparent;
+	--url-bar-open-background-color: #ffffff;
+	/* Safari-like focus ring: 3px ring plus a thin darker inner edge
+	   (sampled from Safari: #94b2f5 / #85a3e6) */
+	--url-focus-ring-color: #94b2f5;
+	--url-focus-ring-edge-color: #85a3e6;
+
+	/* Top area (tab bar + toolbar) */
+	--top-area-bg: #ffffff;
+	/* Safari's inactive-window toolbar color (measured: rgb(240, 240, 240)) */
+	--top-area-bg-inactive: #f0f0f0;
+	--top-area-border: rgba(0, 0, 0, 0.12);
+
+	--fullscreen-color: var(--top-area-bg);
+}
+
+/* Tahoe UI (`userChrome.tahoeUI.enabled`): the field becomes a pill too. The
+   upstream block already sets --border-circle / --border-big. */
+@media -moz-pref("userChrome.tahoeUI.enabled") {
+	:root {
+		--urlbar-radius: 20px;
+	}
+}
+
+/* Nova design (browser.nova.enabled): the field has no extra container border */
+@media -moz-pref("browser.nova.enabled") {
+	:root {
+		--urlbar-container-border: 0px;
+	}
+}
+
+/* macOS Tahoe windows have much larger corners than earlier macOS versions.
+   Firefox exposes this as a media feature, so the header adapts by itself. */
+@media (-moz-mac-tahoe-theme) {
+	:root {
+		--window-corner-radius: 20px;
+	}
+}
+
+/* Dark mode (after the upstream dark block, which it extends) */
+@media (prefers-color-scheme: dark) {
+	:root {
+		--fullscreen-color: #2a2a2a;
+		--top-area-bg: #2a2a2a;
+		--top-area-bg-inactive: #242424;
+		--top-area-border: rgba(255, 255, 255, 0.12);
+		--tab-active-color: #3d3d3f;
+		--url-bar-open-background-color: #3d3d3f;
+		--button-hover-bg: var(--hover-color-primary, rgba(255, 255, 255, 0.1));
+		--button-active-bg: var(--hover-color-primary, rgba(255, 255, 255, 0.17));
+		--url-focus-ring-color: #4f7fd9;
+		--url-focus-ring-edge-color: #6b94e6;
+	}
+}

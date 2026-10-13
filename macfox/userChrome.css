@@ -1,0 +1,171 @@
+/* Firefox macOS style */
+@import "variables.css";
+@import "navbar.css";
+@import "urlbar.css";
+@import "icons.css";
+@import "tabbar.css";
+
+
+/* Active Window Styles */
+#navigator-toolbox,
+#nav-bar,
+#TabsToolbar,
+#titlebar {
+    background: -moz-mac-vibrancy-titlebar-light !important;
+    /* Native macOS wallpaper tinting */
+    appearance: -moz-mac-vibrancy-titlebar-light !important;
+    -moz-appearance: -moz-mac-vibrancy-titlebar-light !important;
+    transition: background 0.2s ease-in-out;
+}
+
+#navigator-toolbox {
+    border-bottom: none !important;
+}
+
+/* Inactive Window Styles */
+/* :root:-moz-window-inactive browser */
+:root:-moz-window-inactive #navigator-toolbox,
+:root:-moz-window-inactive #nav-bar,
+:root:-moz-window-inactive #TabsToolbar,
+:root:-moz-window-inactive #titlebar {
+    background: -moz-mac-vibrancy-underlay !important;
+    /* Slightly desaturated tint */
+    -moz-appearance: -moz-mac-vibrancy-dark !important;
+    opacity: 0.9;
+    transition: background 0.2s ease-in-out;
+}
+
+/* Optional: Make the URL bar blend better */
+#urlbar {
+    border-radius: var(--border-circle) !important;
+    backdrop-filter: blur(20px) !important;
+}
+
+#trust-icon-container {
+    border-radius: var(--urlbar-inner-radius) !important;
+    margin-left: 0 !important;
+}
+
+#TabsToolbar .titlebar-buttonbox-container {
+    margin-left: 6px !important;
+    margin-top: 2px !important;
+}
+
+#unified-extensions-button {
+    width: 0.1px;
+    padding-inline: 0 !important
+}
+
+#unified-extensions-button>.toolbarbutton-icon {
+    width: 0 !important;
+}
+
+#private-browsing-indicator-with-label {
+    margin-right: 10px;
+}
+
+#private-browsing-indicator-with-label>label,
+.titlebar-spacer[type="post-tabs"] {
+    display: none !important;
+}
+
+#nav-bar {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+}
+
+#TabsToolbar {
+    padding-top: 3px !important;
+    padding-left: 5px;
+    padding-right: 10px;
+}
+
+:root[sizemode="fullscreen"] #sidebar-header,
+:root[sizemode="fullscreen"] #PersonalToolbar,
+:root[sizemode="fullscreen"] #TabsToolbar,
+:root[sizemode="fullscreen"] #nav-bar {
+    background-color: var(--mf-toolbar-bg, var(--fullscreen-color)) !important;
+}
+
+#browser {
+    transition: background 0.2s ease-in-out;
+    -moz-default-appearance: -moz-window-titlebar;
+    appearance: auto;
+}
+
+#tabbrowser-tabbox,
+#tabbrowser-tabpanels,
+.browserContainer,
+.browserSidebarContainer,
+.browserStack,
+browser {
+    background-color: transparent !important;
+}
+
+.urlbar-page-action {
+    margin: var(--urlbar-inner-margin) !important;
+    border-radius: var(--urlbar-inner-radius) !important;
+    opacity: 0.3;
+}
+
+.urlbar-page-action:hover {
+    margin: var(--urlbar-inner-margin) !important;
+    opacity: 1.0;
+}
+
+#notification-popup-box {
+    opacity: 0.3;
+}
+
+#notification-popup-box:hover {
+    opacity: 1.0;
+}
+
+.identity-box-button {
+    margin: var(--urlbar-inner-margin) !important;
+    border-radius: var(--urlbar-inner-radius) !important;
+    opacity: 0.3;
+}
+
+.identity-box-button:hover {
+    opacity: 1.0;
+}
+
+#urlbar-searchmode-switcher {
+    margin: var(--urlbar-inner-margin) !important;
+    border-radius: var(--urlbar-inner-radius) !important;
+    opacity: 0.3;
+}
+
+#urlbar-searchmode-switcher:hover {
+    opacity: 0.7;
+}
+
+.toolbar-items {
+    padding-right: 6px;
+}
+
+#sidebar-button {
+    margin-left: 8px;
+}
+
+#tabbrowser-tabbox[sidebar-shown=""] {
+    margin: 0 8px 8px 0 !important;
+    border-radius: var(--border-big-2) !important;
+    overflow: hidden;
+}
+
+#tabbrowser-tabbox:not([sidebar-shown=""]) {
+    margin: 0 !important;
+    border-radius: 0 !important;
+}
+
+/* Inactive/default state */
+#urlbar {
+    background-color: var(--urlbar-overlay-active) !important;
+    transition: background-color 0.2s ease;
+}
+
+:root:-moz-window-inactive #urlbar {
+    background: var(--urlbar-overlay-non-active) !important;
+}

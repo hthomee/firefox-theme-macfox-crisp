@@ -1,0 +1,55 @@
+/* MacFox Crisp: navigation toolbar. Overrides on top of the upstream navbar.css. */
+
+#nav-bar {
+	/* Height follows the content (urlbar + padding) so the bar stays compact;
+	   upstream pins 44px plus extra padding. */
+	height: auto !important;
+	/* Right end: the last toolbar button ("..." menu) is centered under the tab
+	   strip's "+" button. Both hover shapes are 28px wide and end --header-gap
+	   (never closer to the window corner than its radius needs) from the edge.
+	   The toolbar button has 5px side padding of its own, hence -5px. */
+	padding-right: max(0px, calc(max(var(--header-gap), var(--window-corner-radius) * 0.3) - 5px)) !important;
+	padding-top: var(--header-gap) !important;
+	padding-bottom: var(--header-gap) !important;
+}
+
+#nav-bar .toolbarbutton-1 {
+	/* no vertical padding: a toolbar button is then 28px (icon 16 + 2 x 6 inner
+	   padding), the same as the address bar, so the row is as tall as its field */
+	padding: 0 5px !important;
+}
+
+/* Extension icons are full-color artwork, often with a badge (1Password's
+   lock): the round hover shape stays on the button's badge-stack, but the icon
+   itself must not be clipped by it. */
+#nav-bar .webextension-browser-action .toolbarbutton-icon {
+	border-radius: 0 !important;
+}
+
+#nav-bar .webextension-browser-action .toolbarbutton-badge-stack {
+	overflow: visible !important;
+}
+
+/* Back / forward: Safari's hover shape, a rounded rectangle (about 33 x 28)
+   that appears behind the chevron on hover. Color comes from
+   --button-hover-bg / --button-active-bg in variables.css. */
+#nav-bar #back-button,
+#nav-bar #forward-button {
+	padding: 0 1.5px !important;
+}
+
+#nav-bar #back-button > .toolbarbutton-icon,
+#nav-bar #forward-button > .toolbarbutton-icon {
+	box-sizing: content-box !important;
+	width: 16px !important;
+	height: 16px !important;
+	padding: 6px 8.5px !important;
+	border-radius: 7px !important;
+}
+
+/* Hide the flexible spaces beside the urlbar so it fills the full toolbar width
+   (upstream uses them to center and narrow the urlbar; hiding them also makes
+   upstream's spring rules moot). */
+#nav-bar toolbarspring {
+	display: none !important;
+}

@@ -1,0 +1,8 @@
+/* MacFox Crisp: the overlay. Loaded AFTER the upstream macFox theme, so it only
+   contains what differs from it. Everything the upstream theme sets and we do
+   not touch keeps flowing in from upstream. Order matters: variables first. */
+@import "variables.css";
+@import "navbar.css";
+@import "urlbar.css";
+@import "tabbar.css";
+@import "chrome.css";
