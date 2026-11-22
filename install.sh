@@ -13,7 +13,8 @@
 #   ./install.sh /path/to/profile  # install into a specific profile folder
 #
 # macOS only. After running, fully restart Firefox (Cmd+Q) to apply the theme.
-# An existing `chrome` folder is backed up first.
+# An existing `chrome` folder is backed up first, unless it already holds MacFox
+# Crisp: an update just overwrites the theme's files (no backup piles up).
 
 set -euo pipefail
 
@@ -106,11 +107,16 @@ for f in "${ICON_FILES[@]}"; do
 done
 
 # --------------------------------------------------------------------------
-# Back up an existing chrome folder, then copy the theme in.
+# Back up an existing chrome folder that is not MacFox Crisp yet (the user's
+# own customizations), then copy the theme in. An existing MacFox Crisp
+# install is simply updated: its older versions live in git, so a backup on
+# every update would only pile up.
 # --------------------------------------------------------------------------
 chrome_dir="${profile}/chrome"
 
-if [[ -d "$chrome_dir" && -n "$(ls -A "$chrome_dir" 2>/dev/null)" ]]; then
+if [[ -f "$chrome_dir/crisp/crisp.css" ]]; then
+	printf 'Updating the existing MacFox Crisp install (no backup needed).\n\n'
+elif [[ -d "$chrome_dir" && -n "$(ls -A "$chrome_dir" 2>/dev/null)" ]]; then
 	backup="${chrome_dir}.backup-$(date +%Y%m%d-%H%M%S)"
 	cp -R "$chrome_dir" "$backup"
 	printf 'Existing chrome folder backed up to:\n  %s\n\n' "$backup"

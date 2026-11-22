@@ -50,11 +50,18 @@ upstream theme and `crisp/` with MacFox Crisp's changes.
     ```
 
     The script auto-detects your default Firefox profile and copies the
-    theme's files into its `chrome` folder. An existing `chrome` folder is
-    backed up first as `chrome.backup-<date>`. To target a specific profile,
+    theme's files into its `chrome` folder. An existing `chrome` folder of
+    your own is backed up first as `chrome.backup-<date>`; an existing
+    MacFox Crisp install is simply updated. To target a specific profile,
     pass its path: `./install.sh /path/to/profile`.
 
 2. Fully restart Firefox (`Cmd+Q`, then reopen) to apply changes.
+
+To update later, run this in the cloned folder and restart Firefox again:
+
+```bash
+git pull && ./install.sh
+```
 
 #### Option B: Manual
 
