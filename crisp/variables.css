@@ -95,12 +95,11 @@
 	--urlbar-open-expand: 3px;
 	--urlbar-sheet-radius: calc(var(--urlbar-inner-radius) + var(--urlbar-inner-margin) + var(--urlbar-open-expand));
 	--urlbar-sheet-gap: 5.6px;
-	/* Where the text of a result row starts must equal where the URL text starts
-	   in the field. The URL text sits after the chip on the field's left, and the
-	   chip's width depends on the state; these were measured:
-	   - search engine chip (typing / new tab):  46.5px
-	   - shield (page loaded, not typing):       --urlbar-shield-width, below
-	   - 0.45em of the 13px field font:          5.85px  (--urlbar-input-gap) */
+	/* Where the text of a result row starts must equal where the typed text
+	   starts in the field: after the search engine chip (shown while typing and
+	   on a new tab). Measured:
+	   - search engine chip:              46.5px
+	   - 0.45em of the 13px field font:   5.85px  (--urlbar-input-gap) */
 	--urlbar-chip-switcher-width: 46.5px;
 	--urlbar-input-gap-px: 5.85px;
 
@@ -120,7 +119,6 @@
 	--urlbar-shield-width: calc(2 * (var(--tab-side-padding) + 8px - var(--urlbar-chip-start-offset) - var(--urlbar-chip-margin-start)));
 	--urlbar-shield-padding: calc((var(--urlbar-shield-width) - var(--urlbar-shield-size)) / 2);
 	--urlbar-text-gap: calc(var(--tab-side-padding) + 16px + var(--tab-icon-end-margin, 5.5px) + var(--urlbar-text-optical) - var(--urlbar-chip-start-offset) - var(--urlbar-chip-margin-start) - var(--urlbar-shield-width));
-	--urlbar-chip-shield-width: var(--urlbar-shield-width);
 	/* Corner radius of the macOS window (10px before Tahoe, ~20px with it). The
 	   last tab keeps at least the clearance a rectangle needs inside that arc. */
 	--window-corner-radius: 10px;

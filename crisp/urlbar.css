@@ -121,20 +121,10 @@
      --urlbar-background-border-radius, so rows and chips inside stay
      concentric: see variables.css for the arithmetic. */
 #urlbar[open] {
-	/* width of the chip before the URL text in this state, and the gap between
-	   chip and text (see variables.css) */
-	--urlbar-text-chip-width: var(--urlbar-chip-shield-width);
-	--urlbar-text-gap-current: var(--urlbar-text-gap);
 	--urlbar-background-border-focused: var(--urlbar-background-border-open) !important;
 	--urlbar-background-border-radius: var(--urlbar-sheet-radius) !important;
 	--urlbar-input-growth-open-block: var(--urlbar-open-expand) !important;
 	--urlbar-input-growth-open-inline: var(--urlbar-open-expand) !important;
-}
-
-/* Typing (or a new tab): the search engine chip precedes the text */
-#urlbar[open][pageproxystate="invalid"] {
-	--urlbar-text-chip-width: var(--urlbar-chip-switcher-width);
-	--urlbar-text-gap-current: var(--urlbar-input-gap-px);
 }
 
 #star-button-box {
@@ -221,9 +211,26 @@
    the first tab (plus 1px optical correction), and the shield is centered under
    the first tab's favicon.
    Not for the "Not Secure" chip or Firefox/extension chiclets: their chip
-   background needs the normal gap, and typing keeps the search engine chip's. */
-#urlbar[pageproxystate="valid"]:has(#trust-icon-container:not(.insecure)):not(:has(#identity-box:is(.chromeUI, .extensionPage))) .urlbar-input-box {
+   background needs the normal gap, and not for a focused field, which already
+   shows the search engine chip (see below). */
+#urlbar[pageproxystate="valid"]:not([focused]):has(#trust-icon-container:not(.insecure)):not(:has(#identity-box:is(.chromeUI, .extensionPage))) .urlbar-input-box {
 	margin-inline-start: var(--urlbar-text-gap) !important;
+}
+
+/* Focused field: the typing layout right away, before the first key. The search
+   engine chip takes the place of the shield (and of the "Not Secure" chip and
+   the Firefox / extension chiclets) and the URL text moves to where typed text
+   starts. Nothing moves when typing starts, and the result rows (laid out for
+   this, see .urlbarView-favicon) line up with the field's text in every state.
+   While a page is loaded Firefox keeps the chip in the DOM but parks it off
+   screen ([offscreen]: position fixed, top -999px); bring it back. */
+#urlbar[focused] .searchmode-switcher[offscreen] {
+	position: static !important;
+	top: auto !important;
+}
+
+#urlbar[focused] :is(#trust-icon-container, #identity-box) {
+	display: none !important;
 }
 
 /* Chips inside the field (search engine, search mode, "Not Secure", Firefox /
@@ -311,8 +318,11 @@
 	pointer-events: none;
 }
 
-/* The text of a result starts on the same x as the URL text in the field.
-   x of the URL text, from the field's left edge:
+/* The text of a result starts on the same x as the text in the field, the
+   favicon sits under the search engine chip's icon. The sheet is only open while
+   the field is focused, and a focused field always shows the chip (see above), so
+   this is ONE grid for every state: nothing moves when typing starts.
+   x of the field's text, from the field's left edge:
      chip offset (border + padding) + chip start margin + chip + input gap
    x of the result's text, from the sheet's left edge (which is --urlbar-open-expand
    left of the field):
@@ -320,7 +330,7 @@
      margin, which is the one thing set here. */
 .urlbarView-row .urlbarView-favicon {
 	margin-inline-end: calc(
-		var(--urlbar-chip-start-offset) + var(--urlbar-chip-margin-start) + var(--urlbar-text-chip-width, var(--urlbar-chip-shield-width)) + var(--urlbar-text-gap-current, var(--urlbar-input-gap-px))
+		var(--urlbar-chip-start-offset) + var(--urlbar-chip-margin-start) + var(--urlbar-chip-switcher-width) + var(--urlbar-input-gap-px)
 		+ var(--urlbar-open-expand)
 		- var(--urlbar-sheet-gap) - 1px - 4px - 6px - 16px
 	) !important;
